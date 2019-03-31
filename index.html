@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>AngularJs</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-chart.js/0.10.2/angular-chart.js"></script>
+    
+    <script>
+       
+        var app = angular.module('myApp', ["chart.js"]);
+        app.controller('ngClickCtrl', ["$scope","$filter","$http", function ($scope,$filter,$http) {
+            $scope.dateval="";
+var dataval1;
+            $scope.clickMe = function (getdata) {
+               // $http.get("https://api.nasa.gov/neo/rest/v1/feed?start_date="+$filter('date')(getdata.fn, "yyyy-MM-dd") + "&end_date=" + $filter('date')(getdata.ln, "yyyy-MM-dd")+"&api_key=DEMO_KEY").then(function(response){
+                var request=$http({
+	method:'get',
+	url:"https://api.nasa.gov/neo/rest/v1/feed?start_date="+$filter('date')(getdata.fn, "yyyy-MM-dd")+"&end_date="+$filter('date')(getdata.ln, "yyyy-MM-dd")+"&api_key=DEMO_KEY",
+	headers:{'Content-Type':'application/x-www-form-encoded'}
+	});
+   
+      request.success(function(data){
+      $scope.myWelcome=data.near_earth_objects;
+      angular.forEach($scope.myWelcome, function(value, key){
+          $scope.dateval+=","+key;
+        angular.forEach(value, function(value1, key1){
+            angular.forEach(value1.close_approach_data, function(value2, key2){
+         $scope.fastest=value2.relative_velocity.kilometers_per_hour;
+   });
+   });
+   });
+   dataval1=$scope.dataval;
+      //console.log(dataval1.toSting());
+      
+      $scope.labels1 = ['1', '2', '3', '4', '5', '6'];
+  $scope.series1 = ['Fastest'];
+
+  $scope.data1 = [
+    [56196.254494814,43549.8840331056,43762.394535444,236739.0857329166,33261.1445157429,99992.0026792699]
+  ];
+
+  $scope.labels2 = ['1', '2', '3', '4', '5', '6'];
+  $scope.series2 = ['Closest'];
+
+  $scope.data2 = [
+    [23451.216796875,2309347,2685461.75,16704534,4180732.5,8428203]
+  ];
+
+  $scope.labels3 = ['1', '2', '3', '4', '5', '6'];
+  $scope.series3 = ['Avg Size'];
+
+  $scope.data3 = [
+    [0.0056811987,0.0779901901,0.0786031551,0.1823223789,0.0349816249,0.0914197394]
+  ];
+        });
+            };
+            
+        }]);
+    </script>
+    
+</head>
+<body ng-app="myApp">
+    <div ng-controller="ngClickCtrl">
+        <div>
+            <input type="date" ng-model="data.fn"> 
+            <input type="date" ng-model="data.ln"> 
+            <button type="button" ng-click="clickMe(data)">NG-CLICK</button> 
+            
+            Fastest Astroid:
+            <ul>
+                    <li ng-repeat="mw in myWelcome">{{mw[0].close_approach_data[0].relative_velocity.kilometers_per_hour}}</li>
+                                </ul>
+                                Closest Astroid:
+            <ul>
+                    <li ng-repeat="mw in myWelcome">{{mw[0].close_approach_data[0].miss_distance.kilometers}}</li>
+                                </ul>
+                                Avg. Size Astroid:
+            <ul>
+<li ng-repeat="mw in myWelcome">{{mw[0].estimated_diameter.kilometers.estimated_diameter_max}}</li>
+            </ul>
+            Fastest Astroid:
+            <canvas id="bar" class="chart chart-bar"
+  chart-data="data1" chart-labels="labels1"> chart-series="series"
+        </canvas>
+        Closest Astroid:
+        <canvas id="bar" class="chart chart-bar"
+  chart-data="data2" chart-labels="labels2"> chart-series="series"
+        </canvas>
+        Avg. Size Astroid:
+        <canvas id="bar" class="chart chart-bar"
+  chart-data="data3" chart-labels="labels3"> chart-series="series"
+        </canvas>
+        </div>
+    </div>
+</body>
+
+</html>
